@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import org.example.Entities.Account;
 import org.example.Entities.Client;
 import org.example.Entities.Currency;
+import org.example.Exceptions.AccountNotFoundException;
+import org.example.Exceptions.ClientNotFoundException;
+import org.example.Exceptions.NegativeAmountException;
+import org.example.Exceptions.WrongCurrencyException;
 
 import java.math.BigDecimal;
 import java.util.Scanner;
@@ -21,20 +25,20 @@ public class AccountService {
         em.getTransaction().commit();
     }
 
-    public void chargeAccount(int id, BigDecimal amount, Currency currency) {
+    public void chargeAccount(int id, BigDecimal amount, Currency currency) throws AccountNotFoundException, WrongCurrencyException, NegativeAmountException {
         em.getTransaction().begin();
         Account account1 = em.find(Account.class, id);
         if(account1 == null) {
             em.getTransaction().rollback();
-            throw new RuntimeException("Account not found");
+            throw new AccountNotFoundException();
         }
         if(!(account1.getCurrency().getName().equals(currency.getName()))) {
             em.getTransaction().rollback();
-            throw new RuntimeException("Currency does not match");
+            throw new WrongCurrencyException();
         }
         if(amount.compareTo(BigDecimal.ZERO) < 0) {
             em.getTransaction().rollback();
-            throw new RuntimeException("Amount cannot be negative");
+            throw new NegativeAmountException();
         }
         account1.setBalance(account1.getBalance().add(amount));
         em.merge(account1);
@@ -47,11 +51,11 @@ public class AccountService {
         Account account2 = em.find(Account.class, to.getId());
         if(account1 == null) {
             em.getTransaction().rollback();
-            throw new RuntimeException("Account not found");
+            throw new AccountNotFoundException();
         }
         if(account2 == null) {
             em.getTransaction().rollback();
-            throw new RuntimeException("Account not found");
+            throw new AccountNotFoundException();
         }
         if(account1.getCurrency().getName().equals(account2.getCurrency().getName())) {
             account1.setBalance(account1.getBalance().subtract(amount));
@@ -72,20 +76,20 @@ public class AccountService {
         }
         if(amount.compareTo(BigDecimal.ZERO) <= 0) {
             em.getTransaction().rollback();
-            throw new RuntimeException("Amount cannot be negative");
+            throw new NegativeAmountException();
         }
         em.merge(account1);
         em.merge(account2);
         em.getTransaction().commit();
     }
 
-    public BigDecimal getBalanceInUAHFromOneClient(int id) {
+    public BigDecimal getBalanceInUAHFromOneClient(int id) throws ClientNotFoundException {
         em.getTransaction().begin();
         BigDecimal amount = BigDecimal.ZERO;
         Client client = em.find(Client.class, id);
         if(client == null) {
             em.getTransaction().rollback();
-            throw new RuntimeException("Client not found");
+            throw new ClientNotFoundException();
         }
         for (Account a : client.getAccounts()) {
             BigDecimal rate = a.getCurrency().getBuyRate();
