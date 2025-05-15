@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Entities;
 
 import jakarta.persistence.*;
 
@@ -9,7 +9,7 @@ import java.util.Set;
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @Column
     private String name;
@@ -23,11 +23,11 @@ public class Client {
         this.name = name;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

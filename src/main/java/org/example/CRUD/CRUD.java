@@ -1,4 +1,4 @@
-package org.example;
+package org.example.CRUD;
 
 import java.util.List;
 

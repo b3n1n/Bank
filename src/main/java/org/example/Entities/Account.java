@@ -1,8 +1,8 @@
-package org.example;
+package org.example.Entities;
 
 import jakarta.persistence.*;
 
-import javax.xml.namespace.QName;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,14 +12,14 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "account_number")
-    private int accountNumber;
+    private Long accountNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
 
     @Column
-    private double balance;
+    private BigDecimal balance;
 
     @OneToMany(mappedBy = "account")
     private Set<Transaction> transactions = new HashSet<Transaction>();
@@ -30,17 +30,17 @@ public class Account {
 
     public Account() {}
 
-    public Account(Client client, double balance, Currency currency) {
+    public Account(Client client, BigDecimal balance, Currency currency) {
         this.client = client;
         this.balance = balance;
         this.currency = currency;
     }
 
-    public int getId() {
+    public Long getId() {
         return accountNumber;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.accountNumber = id;
     }
 
@@ -52,11 +52,11 @@ public class Account {
         this.client = client;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
